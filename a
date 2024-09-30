@@ -1,0 +1,210 @@
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    role ENUM('admin', 'user') NOT NULL
+);
+
+CREATE TABLE pendaftaran (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nama_lengkap VARCHAR(100) NOT NULL,
+    asal_sekolah VARCHAR(100) NOT NULL,
+    tempat_lahir VARCHAR(50) NOT NULL,
+    tanggal_lahir DATE NOT NULL,
+    jenis_kelamin ENUM('L', 'P') NOT NULL,
+    alamat TEXT NOT NULL,
+    nomor_telepon VARCHAR(15) NOT NULL,
+    agama VARCHAR(50) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    program_studi VARCHAR(50) NOT NULL,
+    status ENUM('Diterima', 'Cadangan', 'Tidak Diterima') DEFAULT 'Cadangan'
+);
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulir Pendaftaran Siswa Baru</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h2 class="mt-4">Formulir Pendaftaran Siswa Baru</h2>
+        <form action="proses_pendaftaran.php" method="post">
+            <div class="form-group">
+                <label for="nama_lengkap">Nama Lengkap:</label>
+                <input type="text" class="form-control" id="nama_lengkap" name="nama_lengkap" required>
+            </div>
+            <div class="form-group">
+                <label for="asal_sekolah">Asal Sekolah (SMP):</label>
+                <input type="text" class="form-control" id="asal_sekolah" name="asal_sekolah" required>
+            </div>
+            <div class="form-group">
+                <label for="tempat_lahir">Tempat Lahir:</label>
+                <input type="text" class="form-control" id="tempat_lahir" name="tempat_lahir" required>
+            </div>
+            <div class="form-group">
+                <label for="tanggal_lahir">Tanggal Lahir:</label>
+                <input type="date" class="form-control" id="tanggal_lahir" name="tanggal_lahir" required>
+            </div>
+            <div class="form-group">
+                <label for="jenis_kelamin">Jenis Kelamin:</label>
+                <select class="form-control" id="jenis_kelamin" name="jenis_kelamin" required>
+                    <option value="L">Laki-Laki</option>
+                    <option value="P">Perempuan</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="alamat">Alamat:</label>
+                <textarea class="form-control" id="alamat" name="alamat" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="nomor_telepon">Nomor Telepon:</label>
+                <input type="text" class="form-control" id ="nomor_telepon" name="nomor_telepon" required>
+            </div>
+            <div class="form-group">
+                <label for="agama">Agama:</label>
+                <input type="text" class="form-control" id="agama" name="agama" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" class="form-control" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="program_studi">Program Studi Pilihan:</label>
+                <input type="text" class="form-control" id="program_studi" name="program_studi" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Daftar</button>
+        </form>
+    </div>
+</body>
+</html>
+
+<?php
+// Konfigurasi database
+$host = 'localhost';
+$username = 'root';
+$password = '';
+$database = 'psb';
+
+// Koneksi ke database
+$koneksi = mysqli_connect($host, $username, $password, $database);
+
+// Cek koneksi
+if (!$koneksi) {
+    die("Koneksi gagal: " . mysqli_connect_error());
+}
+
+// Pengolahan data
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $nama_lengkap = $_POST["nama_lengkap"];
+    $asal_sekolah = $_POST["asal_sekolah"];
+    $tempat_lahir = $_POST["tempat_lahir"];
+    $tanggal_lahir = $_POST["tanggal_lahir"];
+    $jenis_kelamin = $_POST["jenis_kelamin"];
+    $alamat = $_POST["alamat"];
+    $nomor_telepon = $_POST["nomor_telepon"];
+    $agama = $_POST["agama"];
+    $email = $_POST["email"];
+    $program_studi = $_POST["program_studi"];
+
+    // Query untuk insert data
+    $query = "INSERT INTO pendaftaran (nama_lengkap, asal_sekolah, tempat_lahir, tanggal_lahir, jenis_kelamin, alamat, nomor_telepon, agama, email, program_studi) VALUES ('$nama_lengkap', '$asal_sekolah', '$tempat_lahir', '$tanggal_lahir', '$jenis_kelamin', '$alamat', '$nomor_telepon', '$agama', '$email', '$program_studi')";
+
+    // Eksekusi query
+    if (mysqli_query($koneksi, $query)) {
+        echo "Data berhasil disimpan!";
+    } else {
+        echo "Error: " . $query . "<br>" . mysqli_error($koneksi);
+    }
+}
+
+// Tutup koneksi
+mysqli_close($koneksi);
+?>
+
+
+<?php
+// Konfigurasi database
+$host = 'localhost';
+$username = 'root';
+$password = '';
+$database = 'psb';
+
+// Koneksi ke database
+$koneksi = mysqli_connect($host, $username, $password, $database);
+
+// Cek koneksi
+if (!$koneksi) {
+    die("Koneksi gagal: " . mysqli_connect_error());
+}
+
+// Pengolahan data
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $username = $_POST["username"];
+    $password = $_POST["password"];
+
+    // Query untuk cek username dan password
+    $query = "SELECT * FROM users WHERE username = '$username' AND password = '$password'";
+
+    // Eksekusi query
+    $result = mysqli_query($koneksi, $query);
+
+    // Cek hasil query
+    if (mysqli_num_rows($result) > 0) {
+        // Jika username dan password benar, maka redirect ke halaman admin
+        header("Location: admin.php");
+    } else {
+        echo "Username atau password salah!";
+    }
+}
+
+// Tutup koneksi
+mysqli_close($koneksi);
+?>
+
+
+<?php
+// Konfigurasi database
+$host = 'localhost';
+$username = 'root';
+$password = '';
+$database = 'psb';
+
+// Koneksi ke database
+$koneksi = mysqli_connect($host, $username, $password, $database);
+
+// Cek koneksi
+if (!$koneksi) {
+    die("Koneksi gagal: " . mysqli_connect_error());
+}
+
+// Query untuk tampilkan data pendaftaran
+$query = "SELECT * FROM pendaftaran";
+
+// Eksekusi query
+$result = mysqli_query($koneksi, $query);
+
+// Tampilkan data pendaftaran
+while ($row = mysqli_fetch_assoc($result)) {
+    echo "Nama Lengkap: " . $row["nama_lengkap"] . "<br>";
+    echo "Asal Sekolah: " . $row["asal_sekolah"] . "<br>";
+    echo "Tempat Lahir: " . $row["tempat_lahir"] . "<br>";
+    echo "Tanggal Lahir: " . $row["tanggal_lahir"] . "<br>";
+    echo "Jenis Kelamin: " . $row["jenis_kelamin"] . "<br>";
+    echo "Alamat: " . $row["alamat"] . "<br>";
+    echo "Nomor Telepon: " . $row["nomor_telepon"] . "<br>";
+    echo "Agama: " . $row["agama"] . "<br>";
+    echo "Email: " . $row["email"] . "<br>";
+    echo "Program Studi: " . $row["program_studi"] . "<br>";
+    echo "Status: " . $row["status"] . "<br><br>";
+}
+
+// Tutup koneksi
+mysqli_close($koneksi);
+?>
+
+
+
+
